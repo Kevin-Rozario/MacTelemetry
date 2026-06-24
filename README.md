@@ -1,10 +1,8 @@
 # MacTelemetry: High-Performance macOS System Core Monitor
 
-MacTelemetry is a lightweight, low-overhead Terminal User Interface (TUI) performance dashboard engineered explicitly for macOS in modern C++17. Operating completely without heavy script wrappers, Python dependencies, or generic polling utilities, MacTelemetry connects directly to native XNU kernel subsystems, Mach microkernel primitives, and BSD subsystem layers.
+MacTelemetry is a modern C++17 Terminal User Interface (TUI) for real-time macOS system monitoring. By interfacing directly with native XNU kernel subsystems, Mach microkernel primitives, and BSD layers, it operates with minimal resource overhead and requires no Python dependencies or external wrappers.
 
-Designed as a high-density, multi-pane asymmetrical terminal grid, MacTelemetry handles parallel data acquisition using isolated worker threads to maintain true performance metrics without impacting the hardware statistics it measures.
-
----
+The application utilizes a multi-threaded data acquisition pipeline to collect system performance telemetry independently of the main rendering loop, ensuring accurate metric readings.
 
 ## Technical Architecture & Grid Layout
 
@@ -14,18 +12,14 @@ The MacTelemetry rendering engine calculates your active shell layout dimensions
   <img src=".github/assets/terminal-telemetry-screenshot.png" alt="MacTelemetry Terminal Screenshot" width="800"/>
 </p>
 
----
-
 ## Key Technical Capabilities
 
-- **Mach Core Synchronization Engine**: Directly maps processor structures using host_processor_info to parse hardware clock states. Computes microsecond delta values across execution samples, eliminating visual values above 100% or below 0%.
+- **Mach Core Synchronization Engine**: Directly maps processor structures using host_processor_info to parse hardware clock states.
 - **Asymmetric Grid Matrix**: Splices Row 4 layout configurations into a strict 75% process list block and a 25% static glossary side-panel to maintain optimal legibility on compact terminal dimensions.
 - **Dynamic Network Auto-Scaling**: Eliminates flat 0.0 throughput fields by reading raw bytes directly from BSD network descriptors (getifaddrs) and automatically re-scaling text layouts between B, K/s, M/s, and G/s based on link weights.
 - **Proportional Column Truncation**: Binds process list binary strings (libproc) precisely to custom string dimensions, truncating names with trailing indicator blocks (...) to preserve strict column alignment.
 - **Thread-Isolated UI Controller**: Moves event key polling loops into an autonomous terminal execution state (termios), working with standard conditional variable threads to guarantee instant frame teardown when pressing q or Ctrl + C.
 - **256-Color Spectral Ramps**: Interpolates color codes smoothly across the terminal's 256-color cube, creating a fluid color shift (Green -> Yellow -> Red) inside the ASCII bars based on active performance stress.
-
----
 
 ## Compilation & Toolchain Operations
 
@@ -58,8 +52,6 @@ make clean
 make rebuild
 ```
 
----
-
 ## Directory Structure
 
 ```text
@@ -74,8 +66,6 @@ mac-monitor/
     └── ui_renderer.cpp     # Spectral gradient math & layout padding algorithms
 ```
 
----
-
 ## Subsystem Metric Map
 
 | Terminal Component | Core System API Calls / Headers                          | Metric Parsing Calculations                                                                   |
@@ -86,8 +76,6 @@ mac-monitor/
 | **Network**        | `getifaddrs()`, scanning specific `AF_LINK` loops        | Tracks incoming and outgoing interface socket byte properties (`ifi_ibytes` / `ifi_obytes`).  |
 | **Storage**        | `getmntinfo(..., MNT_NOWAIT)`, `statfs` structures       | Evaluates active physical disk sectors specifically filtered for local `apfs` drive targets.  |
 | **Processes**      | `proc_listpids()`, `proc_pidinfo(..., PROC_PIDTASKINFO)` | Aggregates accurate process resident size (`pti_resident_size`) and delta process CPU usages. |
-
----
 
 ## Repository License
 
